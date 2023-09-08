@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 using WindowsInput.Native;
 
@@ -8,6 +10,14 @@ namespace ScreenSwitchApp
     public partial class ScreenSwitch : Form
     {
         private readonly LowLevelKeyboardListener KeyboardListener = new LowLevelKeyboardListener();
+
+        //Registry
+        private readonly string RegistryKey = $"HKEY_CURRENT_USER\\Software\\{FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + AppDomain.CurrentDomain.FriendlyName).ProductName}";
+        private readonly string StartupValue = "Startup";
+
+        //Startup
+        private readonly string AppName = Assembly.GetEntryAssembly().GetName().Name;
+        private readonly string AppPath = Process.GetCurrentProcess().MainModule.FileName;
 
         public ScreenSwitch()
         {
@@ -33,6 +43,17 @@ namespace ScreenSwitchApp
             ScreenSwitch form = sender as ScreenSwitch;
             form.Hide();
             notifyIcon.Visible = true;
+
+            bool? startWithWindows = (int)Registry.GetValue(RegistryKey, StartupValue, false) == 1;
+
+            CheckBox startupCheckbox = new CheckBox()
+            {
+                Text = "Start with Windows",
+                Checked = startWithWindows.GetValueOrDefault()
+            };
+            startupCheckbox.CheckedChanged += OnStartupCheckChanged;
+
+            contextMenuStrip.Items.Add(new ToolStripControlHost(startupCheckbox));
             contextMenuStrip.Items.Add(new ToolStripMenuItem("Exit", null, ExitProgram));
         }
 
@@ -66,6 +87,35 @@ namespace ScreenSwitchApp
         private void ExitProgram(object sender, EventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void OnStartupCheckChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                bool checkedState = checkBox.Checked;
+
+                //Remember the checkbox state
+                Registry.SetValue(RegistryKey, StartupValue, checkedState, RegistryValueKind.DWord);
+
+                //Now deal with statup
+                if (checkedState)
+                {
+                    using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                    {
+                        // Add a Registry entry to start your app on startup
+                        key.SetValue(AppName, AppPath);
+                    }
+                }
+                else
+                {
+                    using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                    {
+                        // Remove a Registry entry
+                        key.DeleteValue(AppName);
+                    }
+                }
+            }
         }
     }
 }
