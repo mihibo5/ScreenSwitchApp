@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSwitchApp", "ScreenSwitchApp\ScreenSwitchApp.csproj", "{174CAEF5-148D-4D33-B76E-C791CA1A9EFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{174CAEF5-148D-4D33-B76E-C791CA1A9EFE}.Debug|x64.ActiveCfg = Debug|x64
+		{174CAEF5-148D-4D33-B76E-C791CA1A9EFE}.Debug|x64.Build.0 = Debug|x64
+		{174CAEF5-148D-4D33-B76E-C791CA1A9EFE}.Release|x64.ActiveCfg = Release|x64
+		{174CAEF5-148D-4D33-B76E-C791CA1A9EFE}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69FF70B7-D700-4390-8815-6828E993AC3E}
+	EndGlobalSection
+EndGlobal
