@@ -9,10 +9,11 @@ namespace ScreenSwitchApp
 {
     public partial class ScreenSwitch : Form
     {
+        private SettingsForm SettingsForm;
         private readonly LowLevelKeyboardListener KeyboardListener = new LowLevelKeyboardListener();
 
         //Registry
-        private readonly string RegistryKey = $"HKEY_CURRENT_USER\\Software\\{FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + AppDomain.CurrentDomain.FriendlyName).ProductName}";
+        private readonly string RegistryKey = $"HKEY_CURRENT_USER\\Software\\ScreenSwitchApp";
         private readonly string StartupValue = "Startup";
 
         //Startup
@@ -38,11 +39,12 @@ namespace ScreenSwitchApp
             }
         }
 
-        private void Form1_Shown(object sender, EventArgs e)
+        private void Form_Shown(object sender, EventArgs e)
         {
             ScreenSwitch form = sender as ScreenSwitch;
             form.Hide();
             notifyIcon.Visible = true;
+            notifyIcon.DoubleClick += OnNotificationDoubleClick;
 
             bool? startWithWindows = (int)Registry.GetValue(RegistryKey, StartupValue, false) == 1;
 
@@ -112,9 +114,25 @@ namespace ScreenSwitchApp
                     using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
                     {
                         // Remove a Registry entry
-                        key.DeleteValue(AppName);
+                        try
+                        {
+                            key.DeleteValue(AppName);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
+            }
+        }
+
+        private void OnNotificationDoubleClick(object sender, EventArgs e)
+        {
+            SettingsForm = SettingsForm.Instance;
+            if (!SettingsForm.Visible)
+            {
+                SettingsForm.Show();
             }
         }
     }
